@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
+
     
     var characters : [CharacterModel] = []
     var episodes : [String : String] = Dictionary<String, String>()
@@ -26,24 +27,17 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         // Do any additional setup after loading the view.
         super.viewDidLoad()
+       let image: UIImage = UIImage(named: "rick.png")!
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = image
+        self.navigationItem.titleView = imageView
+        
         update()
         
         tableView.register(UINib(nibName: "CharacterTableViewCell", bundle: nil), forCellReuseIdentifier: reuseIdentifier)
-
     }
 }
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "toDetailView" {
-//            let detailVC: DetailViewController? = segue.destination as? DetailViewController
-//            let cell: UITableViewCell? = sender as? CharacterTableViewCell
-//            detailVC?.contentText = cell?.textLabel?.text
-//
-//        }
-//    }
-    
-
-
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -56,27 +50,29 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! CharacterTableViewCell
         let character = characters[indexPath.row]
         cell.Title.text = character.name
-        cell.Status.text = "Status: \(character.status)"
-        cell.Location.text = "Last location: \(character.location.name)"
-        cell.Location.numberOfLines = 0
-        cell.Episode.text = "First episode: \(episodes[character.episode[0]] ?? "0")"
-        cell.Episode.numberOfLines = 0
+        cell.Status.text = "\(character.status)"
+        cell.Location.text = "\(character.location.name)"
+        cell.Episode.text = "\(episodes[character.episode[0]] ?? "0")"
+        cell.firstSeenIn.text = "First seen in:"
+        cell.lastKnownlocation.text = "Last known location:"
         
+        switch character.status {
+        case "Alive":
+            cell.statusCircle.tintColor = UIColor.green
+        case "unknown":
+            cell.statusCircle.tintColor = UIColor.gray
+        default:
+            cell.statusCircle.tintColor = UIColor.red
+        }
         return cell
     }
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        performSegue(withIdentifier: "toDetailView", sender: nil)
-//    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       //  performSegue(withIdentifier: "toDetailView", sender: nil)
         let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
                 guard let detailViewController = mainStoryboard.instantiateViewController(withIdentifier: "detailViewController") as? DetailViewController else{ return}
-        //detailViewController.content
         navigationController?.pushViewController(detailViewController, animated: false)
         detailViewController.episode = episodes[characters[indexPath.row].episode[0]]
         detailViewController.character = characters[indexPath.row]
-        
     }
     
     func update() {

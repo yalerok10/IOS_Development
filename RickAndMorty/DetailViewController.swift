@@ -15,6 +15,9 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var Status: UILabel!
     @IBOutlet weak var Location: UILabel!
     @IBOutlet weak var Episode: UILabel!
+    @IBOutlet weak var lastLocation: UILabel!
+    @IBOutlet weak var firstSeen: UILabel!
+    @IBOutlet weak var circle: UIImageView!
     
     var character: CharacterModel?
     var episode: String?
@@ -23,8 +26,9 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        
-        
+        lastLocation.text = "Last known location:"
+        firstSeen.text = "First seen in:"
+                
         if let character = character {
             guard let url = URL(string:character.image) else { return }
             downloadImage(from: url)
@@ -32,6 +36,14 @@ class DetailViewController: UIViewController {
             Status.text = character.status
             Location.text = character.location.name
             Episode.text = episode
+            switch character.status {
+            case "Alive":
+                circle.tintColor = UIColor.green
+            case "unknown":
+                circle.tintColor = UIColor.gray
+            default:
+                circle.tintColor = UIColor.red
+            }
         }
     }
     
@@ -47,14 +59,5 @@ class DetailViewController: UIViewController {
             }
         }
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
